@@ -50,3 +50,18 @@ build-api:
 try-build:
 	REGISTRY=localhost IMAGE_TAG=0 make build
 
+# Push all built services
+push: push-gateway push-frontend push-api
+
+# Push the gateway built service
+push-gateway:
+	docker push ${REGISTRY}/auction-gateway:${IMAGE_TAG}
+
+# Push the front-end built service
+push-frontend:
+	docker push ${REGISTRY}/auction-frontend:${IMAGE_TAG}
+
+# Push the API built service
+push-api:
+	docker push ${REGISTRY}/auction-api:${IMAGE_TAG}
+	docker push ${REGISTRY}/auction-api-php-fpm:${IMAGE_TAG}
