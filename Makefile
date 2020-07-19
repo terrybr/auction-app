@@ -43,8 +43,9 @@ build-frontend:
 
 # Build the API service
 build-api:
-	docker --log-level=debug build --pull --file=api/docker/production/php-fpm/Dockerfile --tag=${REGISTRY}/auction-api-php-fpm:${IMAGE_TAG} api
 	docker --log-level=debug build --pull --file=api/docker/production/nginx/Dockerfile --tag=${REGISTRY}/auction-api:${IMAGE_TAG} api
+	docker --log-level=debug build --pull --file=api/docker/production/php-fpm/Dockerfile --tag=${REGISTRY}/auction-api-php-fpm:${IMAGE_TAG} api
+	docker --log-level=debug build --pull --file=api/docker/production/php-cli/Dockerfile --tag=${REGISTRY}/auction-api-php-cli:${IMAGE_TAG} api
 
 # Check the build process
 try-build:
@@ -65,6 +66,7 @@ push-frontend:
 push-api:
 	docker push ${REGISTRY}/auction-api:${IMAGE_TAG}
 	docker push ${REGISTRY}/auction-api-php-fpm:${IMAGE_TAG}
+	docker push ${REGISTRY}/auction-api-php-cli:${IMAGE_TAG}
 
 # Deploy the app
 deploy:
