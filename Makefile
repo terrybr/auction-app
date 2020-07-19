@@ -29,3 +29,24 @@ docker-build:
 # Shut down the app and remove all volumes
 docker-down-clear:
 	docker-compose down --volumes --remove-orphans
+
+# Build all services for production
+build: build-gateway build-frontend build-api
+
+# Build the gateway service
+build-gateway:
+	docker --log-level=debug build --pull --file=gateway/docker/production/nginx/Dockerfile --tag=${REGISTRY}/auction-gateway:${IMAGE_TAG} gateway/docker/production/nginx
+
+# Build the front-end service
+build-frontend:
+	docker --log-level=debug build --pull --file=frontend/docker/production/nginx/Dockerfile --tag=${REGISTRY}/auction-frontend:${IMAGE_TAG} frontend
+
+# Build the API service
+build-api:
+	docker --log-level=debug build --pull --file=api/docker/production/php-fpm/Dockerfile --tag=${REGISTRY}/auction-api-php-fpm:${IMAGE_TAG} api
+	docker --log-level=debug build --pull --file=api/docker/production/nginx/Dockerfile --tag=${REGISTRY}/auction-api:${IMAGE_TAG} api
+
+# Check the build process
+try-build:
+	REGISTRY=localhost IMAGE_TAG=0 make build
+
