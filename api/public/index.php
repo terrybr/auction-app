@@ -2,22 +2,49 @@
 
 declare(strict_types=1);
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use DI\ContainerBuilder;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Factory\AppFactory;
+use App\Http;
 
+/**
+ * Set up initial response code to 500 so server can respond properly in error cases.
+ * If Slim response is success, server will respond with appropriate response code.
+ */
 http_response_code(500);
 
+/**
+ * Including autoloader.
+ */
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = AppFactory::create();
+/**
+ * Set up app container.
+ */
+$builder = new ContainerBuilder();
 
-$app->addErrorMiddleware((bool) getenv('APP_DEBUG'), true, true);
+$builder->addDefinitions([
+  'config' => [
+    'debug' => (bool) getenv('APP_DEBUG'),
+  ],
+    ResponseFactoryInterface::class => DI\get(Slim\Psr7\Factory\ResponseFactory::class),
+]);
 
-$app->get('/', function (Request $request, Response $response, $args) {
-  $response->getBody()->write('{}');
+$container = $builder->build();
 
-  return $response->withHeader('Content-Type', 'application/json');
-});
+$app = AppFactory::createFromContainer($container);
 
+/**
+ * Add error handling.
+ */
+$app->addErrorMiddleware($container->get('config')['debug'], true, true);
+
+/**
+ * Add app routes.
+ */
+$app->get('/', Http\Action\HomeAction::class);
+
+/**
+ * Run the app.
+ */
 $app->run();
