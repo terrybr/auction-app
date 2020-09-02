@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use DI\ContainerBuilder;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Factory\AppFactory;
-use App\Http;
 
 /**
  * Set up initial response code to 500 so server can respond properly in error cases.
@@ -34,14 +32,14 @@ $container = $builder->build();
 $app = AppFactory::createFromContainer($container);
 
 /**
- * Add error handling.
+ * Add app middlewares.
  */
-$app->addErrorMiddleware($container->get('config')['debug'], true, true);
+(require __DIR__.'/../config/middleware.php')($app, $container);
 
 /**
  * Add app routes.
  */
-$app->get('/', Http\Action\HomeAction::class);
+(require __DIR__.'/../config/routes.php')($app);
 
 /**
  * Run the app.
