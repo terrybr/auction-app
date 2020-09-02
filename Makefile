@@ -1,5 +1,5 @@
 # Install the app
-install: docker-down-clear docker-pull docker-build docker-up
+install: docker-down-clear docker-pull docker-build docker-up api-init
 
 # Alias to start up the app
 up: docker-up
@@ -29,6 +29,13 @@ docker-build:
 # Shut down the app and remove all volumes
 docker-down-clear:
 	docker-compose down --volumes --remove-orphans
+
+# Init API services
+api-init: api-composer-install
+
+# Install composer dependencies for API
+api-composer-install:
+	docker-compose run --rm api-php-cli composer install
 
 # Build all services for production
 build: build-gateway build-frontend build-api
