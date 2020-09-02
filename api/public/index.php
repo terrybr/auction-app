@@ -27,7 +27,6 @@ $builder->addDefinitions([
   'config' => [
     'debug' => (bool) getenv('APP_DEBUG'),
   ],
-    ResponseFactoryInterface::class => DI\get(Slim\Psr7\Factory\ResponseFactory::class),
 ]);
 
 $container = $builder->build();
